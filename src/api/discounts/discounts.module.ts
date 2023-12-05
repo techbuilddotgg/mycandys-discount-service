@@ -15,4 +15,4 @@ import { DiscountRepository } from './repository/discount.repository';
   providers: [DiscountsService, DiscountRepository],
   exports: [DiscountsService, DiscountRepository],
 })
-export class NotificationsModule {}
+export class DiscountsModule {}
