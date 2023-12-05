@@ -12,7 +12,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
-    .setTitle('Notification-service api')
+    .setTitle('Discounts-service api')
     .setVersion('1.0')
     .build();
 

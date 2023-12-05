@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ timestamps: true, collection: 'notifications' })
+@Schema({ timestamps: true, collection: 'discounts' })
 export class Discount {
   @Prop({ type: String, required: true })
   type: string;
