@@ -35,4 +35,8 @@ export class DiscountRepository {
   async findOneAndDelete(discountFilterQuery: FilterQuery<DiscountDocument>) {
     return this.discountModel.findOneAndDelete(discountFilterQuery);
   }
+
+  async dropCollection(): Promise<boolean> {
+    return await this.discountModel.collection.drop();
+  }
 }
