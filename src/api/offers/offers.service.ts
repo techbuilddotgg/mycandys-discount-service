@@ -30,6 +30,7 @@ export class OffersService {
             `${productsMicroservice}/${data.id}/discount`,
             {
               temporaryPrice: res.value,
+              discountId: res._id.toString(),
             },
           );
         if (!productsServiceRes) {
@@ -62,14 +63,15 @@ export class OffersService {
   async removeOffer(data: UpdateOfferDto) {
     const productsMicroservice = process.env.PRODUCTS_SERVICE;
 
-    // const discount = await this.discountsService.update(id, {
-    //   status: false,
-    // });
+    await this.discountsService.update(data.discountId, {
+      status: false,
+    });
 
     const { data: productsServiceRes } = await this.httpService.axiosRef.post(
       `${productsMicroservice}/${data.id}/discount`,
       {
         temporaryPrice: -1,
+        discountId: '',
       },
     );
 

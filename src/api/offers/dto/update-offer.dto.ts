@@ -5,4 +5,8 @@ export class UpdateOfferDto {
   @ApiProperty({ required: true })
   @IsString()
   id: string;
+
+  @ApiProperty({ required: true })
+  @IsString()
+  discountId: string;
 }
