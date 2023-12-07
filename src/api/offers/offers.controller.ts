@@ -2,6 +2,7 @@ import { Body, Controller, Post, HttpException, Param } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
+import { UpdateOfferDto } from './dto/update-offer.dto';
 
 @ApiTags('Offers')
 @Controller('offers')
@@ -20,7 +21,7 @@ export class OffersController {
 
   @ApiOkResponse({ description: 'Remove offer' })
   @Post(':id')
-  async removeOffer(@Param('id') id: string) {
+  async removeOffer(@Param('id') id: UpdateOfferDto) {
     try {
       return await this.offersService.removeOffer(id);
     } catch (e) {
