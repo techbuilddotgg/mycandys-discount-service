@@ -1,4 +1,5 @@
 import {
+  ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiPreconditionFailedResponse,
@@ -13,11 +14,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { DiscountsService } from './discounts.service';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
 import { DiscountDocument } from './schemas/discount.schema';
+import { AuthGuard } from '../../auth/AuthGuard';
 
 @ApiTags('Discounts')
 @Controller('discounts')
@@ -26,6 +29,8 @@ export class DiscountsController {
 
   @ApiOkResponse({ description: 'Retrieves discount' })
   @ApiNotFoundResponse({ description: 'Discount not found' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Get(':id')
   async findById(@Param('id') id: string): Promise<DiscountDocument> {
     try {
@@ -37,6 +42,8 @@ export class DiscountsController {
 
   @ApiOkResponse({ description: 'Retrieves all discounts' })
   @ApiNotFoundResponse({ description: 'Discounts not found' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Get()
   async findAll(): Promise<DiscountDocument[]> {
     try {
@@ -48,6 +55,8 @@ export class DiscountsController {
 
   @ApiOkResponse({ description: 'Create new discount' })
   @ApiPreconditionFailedResponse({ description: 'Discount already exists' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Post()
   async createDiscount(
     @Body() discount: CreateDiscountDto,
@@ -61,6 +70,8 @@ export class DiscountsController {
 
   @ApiOkResponse({ description: 'Update discount' })
   @ApiNotFoundResponse({ description: 'Discount not found' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Patch()
   async update(
     @Body() discount: UpdateDiscountDto,
@@ -75,6 +86,8 @@ export class DiscountsController {
 
   @ApiOkResponse({ description: 'Delete discount' })
   @ApiNotFoundResponse({ description: 'Discount not found' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Delete()
   async delete(@Param('id') id: string): Promise<boolean> {
     try {

@@ -6,9 +6,9 @@ import 'dotenv/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DiscountsModule } from './api/discounts/discounts.module';
 import { OffersModule } from './api/offers/offers.module';
-import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -25,9 +25,9 @@ import configuration from './config/configuration';
       }),
       inject: [ConfigService],
     }),
+    HttpModule,
     DiscountsModule,
     OffersModule,
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

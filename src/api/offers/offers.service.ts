@@ -25,18 +25,6 @@ export class OffersService {
         status: data.status,
       })
       .then(async (res) => {
-        const { data: productsServiceRes } =
-          await this.httpService.axiosRef.post(
-            `${productsMicroservice}/${data.id}/discount`,
-            {
-              temporaryPrice: res.value,
-              discountId: res._id.toString(),
-            },
-          );
-        if (!productsServiceRes) {
-          throw new Error('Error while applying the discount on products');
-        }
-
         for (const email of mailingList()) {
           const { data: mailServiceRes } = await this.httpService.axiosRef.post(
             `${notificationsMicroservice}/emails`,
@@ -51,6 +39,17 @@ export class OffersService {
           if (!mailServiceRes) {
             throw new Error('Error while sending email');
           }
+        }
+        const { data: productsServiceRes } =
+          await this.httpService.axiosRef.post(
+            `${productsMicroservice}/${data.id}/discount`,
+            {
+              temporaryPrice: res.value,
+              discountId: res._id.toString(),
+            },
+          );
+        if (!productsServiceRes) {
+          throw new Error('Error while applying the discount on products');
         }
       })
       .catch((e) => {

@@ -1,8 +1,16 @@
-import { Body, Controller, Post, HttpException, Param } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Post,
+  HttpException,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
+import { AuthGuard } from '../../auth/AuthGuard';
 
 @ApiTags('Offers')
 @Controller('offers')
@@ -10,6 +18,8 @@ export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
   @ApiOkResponse({ description: 'Create new offer' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Post()
   async createOffer(@Body() offerData: CreateOfferDto) {
     try {
@@ -20,6 +30,8 @@ export class OffersController {
   }
 
   @ApiOkResponse({ description: 'Remove offer' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Post(':id')
   async removeOffer(@Param('id') id: UpdateOfferDto) {
     try {
