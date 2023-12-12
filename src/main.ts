@@ -14,7 +14,13 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Discounts-service api')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth({
+      type: 'apiKey',
+      bearerFormat: 'JWT',
+      scheme: 'bearer',
+      name: 'Authorization',
+      in: 'header',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

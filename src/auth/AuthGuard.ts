@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
         `${process.env.AUTH_SERVICE}/auth/verify`,
         {
           headers: {
-            Authorization: request.headers.authorization.split(' ')[1],
+            Authorization: request.headers.authorization,
           },
         },
       );
