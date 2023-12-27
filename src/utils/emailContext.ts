@@ -3,7 +3,3 @@ export const emailSubject = (type: string) => {
     return `Offer`;
   }
 };
-
-export const mailingList = () => {
-  return ['mycandiesteam@gmail.com'];
-};

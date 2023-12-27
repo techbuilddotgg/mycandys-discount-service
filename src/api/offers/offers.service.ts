@@ -4,7 +4,7 @@ import { CreateOfferDto } from './dto/create-offer.dto';
 import * as process from 'process';
 import { HttpService } from '@nestjs/axios';
 import type { AxiosError } from 'axios';
-import { emailSubject, mailingList } from '../../utils/emailContext';
+import { emailSubject } from '../../utils/emailContext';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 
 @Injectable()
@@ -25,21 +25,6 @@ export class OffersService {
         status: data.status,
       })
       .then(async (res) => {
-        for (const email of mailingList()) {
-          const { data: mailServiceRes } = await this.httpService.axiosRef.post(
-            `${notificationsMicroservice}/emails`,
-            {
-              user: email,
-              title: 'New special offer',
-              message:
-                'Check out this cool new MyCandys offer we have for you!',
-              type: emailSubject(res.type),
-            },
-          );
-          if (!mailServiceRes) {
-            throw new Error('Error while sending email');
-          }
-        }
         const { data: productsServiceRes } =
           await this.httpService.axiosRef.post(
             `${productsMicroservice}/${data.id}/discount`,
@@ -48,8 +33,23 @@ export class OffersService {
               discountId: res._id.toString(),
             },
           );
+
         if (!productsServiceRes) {
           throw new Error('Error while applying the discount on products');
+        }
+
+        const { data: mailServiceRes } = await this.httpService.axiosRef.post(
+          `${notificationsMicroservice}/emails`,
+          {
+            user: this.getMailingList(),
+            title: 'New special offer',
+            message: 'Check out this cool new MyCandys offer we have for you!',
+            type: emailSubject(res.type),
+          },
+        );
+
+        if (!mailServiceRes) {
+          throw new Error('Error while sending email');
         }
       })
       .catch((e) => {
@@ -79,5 +79,18 @@ export class OffersService {
     }
 
     return 'Offer removed successfully!';
+  }
+
+  async getMailingList() {
+    const usersMicroservice = process.env.USERS_SERVICE;
+    const { data: usersServiceRes } = await this.httpService.axiosRef.get(
+      `${usersMicroservice}/users`,
+    );
+
+    if (!usersServiceRes) {
+      throw new Error('Error while fetching users');
+    }
+
+    return usersServiceRes;
   }
 }
