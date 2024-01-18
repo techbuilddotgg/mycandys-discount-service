@@ -45,7 +45,7 @@ export class OffersService {
         }
 
         await this.httpService.axiosRef.post(
-          `${notificationsMicroservice}/emails`,
+          `${notificationsMicroservice}/api/v1/emails`,
           {
             title: 'New special offer TEST',
             message: 'Check out this cool new MyCandys offer we have for you!',
