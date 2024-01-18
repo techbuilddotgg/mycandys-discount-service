@@ -13,10 +13,11 @@ export class OffersService {
     private readonly discountsService: DiscountsService,
     private readonly httpService: HttpService,
   ) {}
-
-  async createOffer(data: CreateOfferDto) {
+  async createOffer(data: CreateOfferDto, user: any) {
     const notificationsMicroservice = process.env.NOTIFICATION_SERVICE;
     const productsMicroservice = process.env.PRODUCTS_SERVICE;
+
+    const mailingList = await this.getMailingList(user);
 
     await this.discountsService
       .create({
@@ -26,11 +27,16 @@ export class OffersService {
       })
       .then(async (res) => {
         const { data: productsServiceRes } =
-          await this.httpService.axiosRef.post(
-            `${productsMicroservice}/${data.id}/discount`,
+          await this.httpService.axiosRef.put(
+            `${productsMicroservice}/products/${data.id}/discount`,
             {
               temporaryPrice: res.value,
               discountId: res._id.toString(),
+            },
+            {
+              headers: {
+                Authorization: user,
+              },
             },
           );
 
@@ -38,59 +44,67 @@ export class OffersService {
           throw new Error('Error while applying the discount on products');
         }
 
-        const { data: mailServiceRes } = await this.httpService.axiosRef.post(
+        await this.httpService.axiosRef.post(
           `${notificationsMicroservice}/emails`,
           {
-            user: this.getMailingList(),
-            title: 'New special offer',
+            title: 'New special offer TEST',
             message: 'Check out this cool new MyCandys offer we have for you!',
             type: emailSubject(res.type),
+            users: mailingList,
+          },
+          {
+            headers: {
+              Authorization: user,
+            },
           },
         );
-
-        if (!mailServiceRes) {
-          throw new Error('Error while sending email');
-        }
       })
       .catch((e) => {
         const err = e as AxiosError;
         console.log(err.request);
       });
-    return 'Offer created successfully!';
   }
 
-  async removeOffer(data: UpdateOfferDto) {
+  async removeOffer(data: UpdateOfferDto, user: any) {
     const productsMicroservice = process.env.PRODUCTS_SERVICE;
 
     await this.discountsService.update(data.discountId, {
       status: false,
     });
 
-    const { data: productsServiceRes } = await this.httpService.axiosRef.post(
-      `${productsMicroservice}/${data.id}/discount`,
+    const { data: productsServiceRes } = await this.httpService.axiosRef.put(
+      `${productsMicroservice}/products/${data.id}/discount`,
       {
         temporaryPrice: -1,
         discountId: '',
+      },
+      {
+        headers: {
+          Authorization: user,
+        },
       },
     );
 
     if (!productsServiceRes) {
       throw new Error('Error while removing the discount on products');
     }
-
     return 'Offer removed successfully!';
   }
 
-  async getMailingList() {
-    const usersMicroservice = process.env.USERS_SERVICE;
-    const { data: usersServiceRes } = await this.httpService.axiosRef.get(
-      `${usersMicroservice}/users`,
-    );
+  async getMailingList(user: string) {
+    const usersMicroservice = process.env.AUTH_SERVICE;
 
+    const { data: usersServiceRes } = await this.httpService.axiosRef.get(
+      `${usersMicroservice}/users/emails`,
+      {
+        headers: {
+          Authorization: `Bearer ${user}`,
+        },
+      },
+    );
     if (!usersServiceRes) {
       throw new Error('Error while fetching users');
     }
-
-    return usersServiceRes;
+    return usersServiceRes.emails;
   }
 }

@@ -3,14 +3,15 @@ import {
   Controller,
   Post,
   HttpException,
-  Param,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 import { AuthGuard } from '../../auth/AuthGuard';
+import { User } from '../../decorators/authorization.decorator';
 
 @ApiTags('Offers')
 @Controller('offers')
@@ -21,9 +22,9 @@ export class OffersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post()
-  async createOffer(@Body() offerData: CreateOfferDto) {
+  async createOffer(@Body() offerData: CreateOfferDto, @User() user: any) {
     try {
-      return await this.offersService.createOffer(offerData);
+      return await this.offersService.createOffer(offerData, user);
     } catch (e) {
       throw new HttpException(e.message, 404);
     }
@@ -32,10 +33,10 @@ export class OffersController {
   @ApiOkResponse({ description: 'Remove offer' })
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Post(':id')
-  async removeOffer(@Param('id') id: UpdateOfferDto) {
+  @Put()
+  async removeOffer(@Body() offerData: UpdateOfferDto, @User() user: any) {
     try {
-      return await this.offersService.removeOffer(id);
+      return await this.offersService.removeOffer(offerData, user);
     } catch (e) {
       throw new HttpException(e.message, 404);
     }

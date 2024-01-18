@@ -6,6 +6,7 @@ import { DiscountsService } from '../discounts/discounts.service';
 import { OffersService } from './offers.service';
 import { OffersController } from './offers.controller';
 import { HttpModule } from '@nestjs/axios';
+import { REQUEST } from '@nestjs/core';
 
 @Module({
   imports: [
